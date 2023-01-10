@@ -2,7 +2,12 @@ const { MessageEmbed } = require("discord.js")
 const db = require("quick.db")
 const discord = require("discord.js")
 exports.run = async (bot, message, args) => {
- if(message.author.id == '753298841712721961')  {
+ if (!message.member.hasPermission("ADMINISTRATOR")) {
+     const embed = new Discord.MessageEmbed()
+     .setColor(`#ff0000`)
+         .setDescription(`:pleux_no: | You don't have **BAN Members** permission to use this command!!!`);
+      return message.lineReply(embed)
+       };
    
     if (!args[0]) {
           const embed = new discord.MessageEmbed()
@@ -17,13 +22,7 @@ exports.run = async (bot, message, args) => {
     member.send(args.slice(0).join(" ")).catch(e => console.error(`Couldn't DM member ${member.user.tag}`));
 });
 
- } else {
-     const permEmbed = new discord.MessageEmbed()
-     .setColor("#ff0000")
-      .setDescription("You don't have permission to use this command!")
-     message.channel.send(permEmbed)
-	}
- }
+ } 
  exports.info = {
   name: "dmall",
   aliases: [],

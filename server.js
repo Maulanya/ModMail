@@ -299,11 +299,8 @@ bot.on("message", (message) => {
   if (message.guild) {
     bot.config = {
       owners: "753298841712721961",
-      prefix: bot.db.get(`${message.guild.id}_prefix`) || "w",
+      prefix: "d",
       thumbail: "https://www.droidgamers.com/wp-content/uploads/2022/01/Grow_UbiWeek_Keyart_v1.7_F-1-1024x576.jpg"
-    };
-    bot.music = {
-      vote: bot.db.get(`${message.guild.id}_vote`) || false,
     };
   }
 });
@@ -343,113 +340,29 @@ fs.readdir("./commands/", (err, categories) => {
     });
   });
 });
-/*
- const yesembed = new discord.MessageEmbed()
-.setTitle(`<:yeey:994831617472340018> Yeey...`)
-       .setDescription(`<:golden_pickaxe:994469787122016276> ${button.author.id} just give Golden Pickaxe`)
-    .setTimestamp()
-        .setColor("#00ff11")  
- */
-bot.on('clickButton', async (button) => {
-  const db = require("quick.db");
-  if (button.id === "yesbtn") {
-    //button.defer() 
-    const yesembed = new button.MessageEmbed()
-      .setTitle(`<:yeey:994831617472340018> Yeey...`)
-      .setDescription(`<:golden_pickaxe:994469787122016276> ${button.author.tag} just give Golden Pickaxe`)
-      .setTimestamp()
-      .setColor("#00ff11")
-    button.channel.send(yesembed)
-
-    //db.delete(`goldenpc_${button.author.id}`)
-    //db.set(`goldenpc_${user.user.id}`, 1)
-    //button.channel.send(`sudah di kirim ok`)
-  };
-  if (button.id === "nobtn") {
-    //button.defer()
-    button.channel.send(`oke ga jadi`)
-    //action
-  }
-
-});
-
 bot.on("message", async (message) => {
   if (message.author.bot) return;
   const db = require("quick.db");
-  //Message Delete
-  if (message.content.startsWith(`${bot.config.prefix}snipe`)) {
-    let snipe = snipes.get(message.channel.id)
-    const snipesembed = new discord.MessageEmbed()
-      .setDescription('No messages have been deleted yet')
-      .setColor('#fc0b03')
-    if (!snipe) return message.channel.send(snipesembed)
 
-    const snipeBot = new discord.MessageEmbed()
-      .setColor('#fc0b03')
-      .setDescription("Messages deleted by BOT cannot be loaded")
-    if (snipe.author.bot) return message.channel.send(snipeBot);
-
-    // if (snipe.author.bot) return message.channel.send(snipesembed)
-    const snipeEmbed = new discord.MessageEmbed()
-      .setAuthor(`Message Delete By ${snipe.author.tag}`, snipe.author.displayAvatarURL())
-      .setColor("#03fc24")
-      .setDescription(snipe.content)
-
-    if (
-      snipe.attachments.first()
-        ? snipe.attachments.first().proxyURL
-        : null
-    ) {
-      snipeEmbed.setImage(
-        snipe.attachments.first()
-          ? snipe.attachments.first().proxyURL
-          : null
-      )
-    }
-    message.channel.send(snipeEmbed)
-  };
-
-  //Message Update
-  if (message.content.startsWith(`${bot.config.prefix}edits`)) {
-    let oldMessage = edits.get(message.channel.id)
-    let newMessage = edits2.get(message.channel.id)
-    const editsembed = new discord.MessageEmbed()
-      .setDescription('No messages have been update yet')
-      .setColor('#fc0b03')
-    if (!oldMessage) return message.channel.send(editsembed)
-    // if (oldMessage.author.bot) return message.channel.send(editsembed)
-    const editEmbed = new discord.MessageEmbed()
-      .setAuthor(`Message Update By ${oldMessage.author.tag}`, oldMessage.author.displayAvatarURL())
-      .setColor("#03fc24")
-      .setDescription(
-        `**Old Message  : **${oldMessage}\n**New Message : **${newMessage}`
-      )
-
-    if (
-      oldMessage.attachments.first()
-        ? oldMessage.attachments.first().proxyURL
-        : null
-    ) {
-      editEmbed.setImage(
-        oldMessage.attachments.first()
-          ? oldMessage.attachments.first().proxyURL
-          : null
-      )
-    }
-
-    message.channel.send(editEmbed)
-  };
-
+//BlackList
+  const Blacklisted = db.fetch(`blacklistedUsers_${message.author.id}`)
+  
   if (message.channel.type === "dm") {
+      
+    const dmEmbeds = new discord.MessageEmbed()
+    .setAuthor(bot.user.username + ` Ilmu Komputer dan Teknologi`, bot.user.displayAvatarURL())
+    .addField("Report Opened", 'Someone will respond shortly, please be patient.')
+      .setColor('#03fc0f')
+   .setTimestamp();
     const dmEmbed = new discord.MessageEmbed()
-      .setTitle(`New Private Message Sent by ${message.author.tag}!`)
-      .setThumbnail(`${message.author.displayAvatarURL({ dynamic: true })}`)
-      .setAuthor(
-        `USER: ${message.author.tag}` + `\nID: ${message.author.id}`,
+       .setAuthor(`New Private Message Sent by ${message.author.tag}!`, 
         `${message.author.displayAvatarURL({ dynamic: true })}`
       )
-      .setDescription(`${message.content}`)
-      .setColor(`#131313`);
+      .addField('User Name', message.author.tag)
+      .addField('User ID', message.author.id)
+      .addField('Message', message.content)
+       .setTimestamp()
+      .setColor(`#be43da`);
 
     if (
       message.attachments.first()
@@ -462,106 +375,81 @@ bot.on("message", async (message) => {
           : null
       )
     }
-
-    bot.channels.cache.get(`921957126119772190`).send(dmEmbed);
-  }
-
-  if (message.channel.name == "global-chat" && !message.author.bot) {
-    bot.guilds.cache.forEach((guild) => {
-      let channel = guild.channels.cache.find(
-        (ch) => ch.name === "global-chat"
-      );
-      if (!channel) return;
-      const embed = new discord.MessageEmbed()
-        .setAuthor(message.author.username, message.author.displayAvatarURL())
-        .setDescription(
-          `**From Server:** ${message.guild.name}\n**Server ID:** ${message.guild.id}\n\n**Message:** ${message.content}\n[Jump to channel](https://discord.com/channels/${message.guild.id}/${message.channel.id})`
-        )
-        .setColor("RANDOM");
-      if (
-        message.attachments.first()
-          ? message.attachments.first().proxyURL
-          : null
-      ) {
-        embed.setImage(
-          message.attachments.first()
-            ? message.attachments.first().proxyURL
-            : null
-        );
-      }
-      channel.send(embed);
-    });
-  }
-
-  db.add(`messages_${message.guild.id}_${message.author.id}`, 1);
-  if (db.has(`${message.guild.id}_${message.author.id}` + ".afk")) {
-    /*  message.member.setNickname(`${message.author.username}`).catch((error) => {
-        return;
-      }); */
-
-    const embed = new discord.MessageEmbed()
-      .setThumbnail(message.author.displayAvatarURL({ dynamic: true }))
-      .setAuthor(message.author.username + ` is no longer AFK
-`)
-      .setDescription(
-        `**Message**\n> Welcome back, I've removed your AFK status.`)
-      .setColor("#34c6eb")
-      .setFooter(`AFK since `)
-      .setTimestamp();
-    message.channel.send(embed).then((ms) => {
-      // message.reply(`Welcome back, i removed your AFK`).then((ms) => {
-      ms.delete({ timeout: "7000" });
-    });
-    db.delete(`${message.guild.id}_${message.author.id}` + ".afk");
-    db.delete(`${message.guild.id}_${message.author.id}` + ".messageafk");
-  }
-
-  message.mentions.users.forEach((user) => {
-
-    let stat = {
-      online: "https://emoji.gg/assets/emoji/9166_online.png",
-      idle: "https://emoji.gg/assets/emoji/3929_idle.png",
-      dnd: "https://emoji.gg/assets/emoji/2531_dnd.png",
-      offline: "https://emoji.gg/assets/emoji/7445_status_offline.png"
+    if(Blacklisted === true) {
+    message.author.send("You have been blacklisted, you cannot contact the staff.")
+    } else {
+      message.author.send(dmEmbeds)
+ bot.channels.cache.get(`1059887940874010704`).send(dmEmbed);
     }
-
-    if (db.has(`${message.guild.id}_${user.id}` + ".afk")) {
-      let messageafk2 = db.fetch(
-        `${message.guild.id}_${user.id}` + ".messageafk"
-      );
-      if (message.author.bot) return;
-      const embed = new discord.MessageEmbed()
-        .setThumbnail(user.displayAvatarURL({ dynamic: true }))
-        .setAuthor(`${user.tag} is now AFK
-`, stat[user.presence.status])
-        .setDescription(
-          `**Message**\n${messageafk2}`)
-        .setColor("#34c6eb")
-        .setFooter(`AFK since • ${new Date()
-          .toString()
-          .split(" ", 5)
-          .join(" ")}`
-        )
-      message.channel.send(embed);
-      // message.channel.send(`**${user.tag}** is AFK\nReason: ${messageafk2}`);
-    }
-  });
+  }
   const prefixMention = new RegExp(`^<@!?${bot.user.id}>( |)$`);
-  let testo = bot.db.get(`${message.guild.id}_prefix`) || "w";
+  let testo = "d";
 
-  if (message.content.match(prefixMention)) {
+  if (message.content.match(prefixMention) && !message.member.hasPermission("ADMINISTRATOR")) {
     return message.reply(
       new discord.MessageEmbed()
         .setDescription(
-          `My current prefix in this server is  \`${testo}\`  \ntype \`${testo}help\` for command`
+          `This bot can only be used by server admins`
         )
         .setColor("#34c6eb")
-        .setFooter(`invite me with ${testo}invite`)
+    );
+  } else if (message.content.match(prefixMention) && message.member.hasPermission("ADMINISTRATOR")) {
+    return message.reply(
+      new discord.MessageEmbed()
+        .setDescription(
+          `My current prefix in this server is  \`${testo}\`  \ntype \`${testo}dhelp\` for command`
+        )
+        .setColor("#34c6eb")
     );
   }
   if (message.author.bot || message.author === bot.user) return;
 
-  if (!message.guild) {
+ 
+});
+
+bot.on("ready", () => {
+  bot.user.setActivity(
+    `DM for contact Staff`,
+    // `${bot.guilds.cache.size} Server's`,
+    { type: "PLAYING" }
+  );
+  console.log("Artificial Bot Maulana#1977 2020.");
+  console.log(
+    "[!] Make sure there are no commands that get an error when coding, it will cause an error when commands are used, the bot is now online / active, make sure you check everything carefully."
+  );
+  console.log("Ok it works!!!");
+  console.log("The bot is ready to use");
+  console.log(
+    `[Connect] ${bot.user.tag} ready to serve ${bot.users.cache.size} at ${bot.guilds.cache.size} servers.`
+  );
+  console.log(`logged in as ${bot.user.username} BOT ✅`);
+  console.log(`Update:[${new Date().toString().split(" ", 5).join(" ")}]`);
+
+  //this code will show bot when already connected and send it to channel discord
+});
+function pad(n) {
+  return parseInt(n) < 10 // If number less than 10
+    ? "0" + n // Add '0' in front
+    : n; // Else, return the original string.
+}
+function seconds(seconds) {
+  seconds = Number(seconds);
+  var d = Math.floor(seconds / (3600 * 24));
+  var h = Math.floor((seconds % (3600 * 24)) / 3600);
+  var m = Math.floor((seconds % 3600) / 60);
+  var s = Math.floor(seconds % 60);
+
+  var dDisplay = d > 0 ? d + (d == 1 ? " date, " : " date, ") : "";
+  var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hour, ") : "";
+  var mDisplay = m > 0 ? m + (m == 1 ? " minutes, " : " minutes, ") : "";
+  var sDisplay = s > 0 ? s + (s == 1 ? " seconds" : " seconds") : "";
+  return dDisplay + hDisplay + mDisplay + sDisplay;
+}
+
+bot.on("message", async (message) => {
+  if (message.author.bot || message.guild === null) return;
+
+   if (!message.guild) {
     const prefixMention = new RegExp(`^<@!?${bot.user.id}> `);
     const prefix = message.content.match(prefixMention)
       ? message.content.match(prefixMention)[0]
@@ -600,11 +488,6 @@ bot.on("message", async (message) => {
     } finally {
       // If you want to really know, who is typing or using your bot right now.
       console.log(`${sender.tag} (${sender.id}) ran a command: ${cmd}`);
-      bot.channels.cache
-        .get(`996343958093439077`)
-        .send(
-          `${sender.tag} (${sender.id}) in ${message.guild.name} ran a command: *${cmd}*`
-        );
     }
     return;
   }
@@ -669,59 +552,8 @@ bot.on("message", async (message) => {
       console.log(error.message);
     } finally {
       console.log(`${sender.tag} (${sender.id}) ran a command: ${cmd}`);
-      bot.channels.cache
-        .get(`996343958093439077`)
-        .send(
-          `${sender.tag} (${sender.id}) in ${message.guild.name} ran a command: *${cmd}*`
-        );
     }
   }
-});
-
-bot.on("ready", () => {
-  bot.user.setActivity(
-    `whelp`,
-    // `${bot.guilds.cache.size} Server's`,
-    { type: "PLAYING" }
-  );
-  console.log("Artificial Bot Maulana#1977 2020.");
-  console.log(
-    "[!] Make sure there are no commands that get an error when coding, it will cause an error when commands are used, the bot is now online / active, make sure you check everything carefully."
-  );
-  console.log("Ok it works!!!");
-  console.log("The bot is ready to use");
-  console.log(
-    `[Connect] ${bot.user.tag} ready to serve ${bot.users.cache.size} at ${bot.guilds.cache.size} servers.`
-  );
-  console.log(`logged in as ${bot.user.username} BOT ✅`);
-  console.log(`Update:[${new Date().toString().split(" ", 5).join(" ")}]`);
-
-  //this code will show bot when already connected and send it to channel discord
-});
-function pad(n) {
-  return parseInt(n) < 10 // If number less than 10
-    ? "0" + n // Add '0' in front
-    : n; // Else, return the original string.
-}
-function seconds(seconds) {
-  seconds = Number(seconds);
-  var d = Math.floor(seconds / (3600 * 24));
-  var h = Math.floor((seconds % (3600 * 24)) / 3600);
-  var m = Math.floor((seconds % 3600) / 60);
-  var s = Math.floor(seconds % 60);
-
-  var dDisplay = d > 0 ? d + (d == 1 ? " date, " : " date, ") : "";
-  var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hour, ") : "";
-  var mDisplay = m > 0 ? m + (m == 1 ? " minutes, " : " minutes, ") : "";
-  var sDisplay = s > 0 ? s + (s == 1 ? " seconds" : " seconds") : "";
-  return dDisplay + hDisplay + mDisplay + sDisplay;
-}
-
-bot.on("message", async (message) => {
-  if (message.author.bot || message.guild === null) return;
-  xp(message);
-
-  serverxp(message);
 
   const prefixMention = new RegExp(`^<@!?${bot.user.id}> `);
   const prefix = message.content.match(prefixMention)
@@ -755,72 +587,6 @@ bot.on("message", async (message) => {
   }
 });
 
-//leveling
-function xp(message) {
-  let xp = bot.db.add(
-    `xp_${message.author.id}`,
-    Math.floor(Math.random() * 5) + 3
-  );
-  let level = Math.floor(0.3 * Math.sqrt(xp));
-
-  let lvl =
-    bot.db.get(`level_${message.author.id}`) ||
-    bot.db.set(`level_xp_${message.author.id}`, 1);
-  if (level > lvl) {
-    let newLevel = bot.db.set(`level_${message.author.id}`, level);
-    if (
-      message.guild.id === "865943338876010506" ||
-      bot.db.get(`${message.guild.id}_lvlupmsg`) === "no"
-    )
-      return;
-    message.channel
-      .send(`> ${message.author.toString()} is now at level ${newLevel} in global!`);
-  }
-}
-
-function serverxp(message) {
-  let a = message.guild.id;
-  let xp = bot.db.add(
-    `${a}xp_${message.author.id}`,
-    Math.floor(Math.random() * 5) + 3
-  );
-  let level = Math.floor(0.3 * Math.sqrt(xp));
-  let lvl =
-    bot.db.get(`${a}level_${message.author.id}`) ||
-    bot.db.set(`${a}level_${a}xp_${message.author.id}`, 1);
-  if (level > lvl) {
-    let newLevel = bot.db.set(`${a}level_${message.author.id}`, level);
-    if (
-      message.guild.id === "865943338876010506" ||
-      bot.db.get(`${message.guild.id}_lvlupmsg`) === "no"
-    )
-      return;
-    message.channel
-      .send(
-        `> ${message.author.toString()} is now on level ${newLevel} in this server!`);
-  }
-}
-bot.on("guildCreate", (guild) => {
-  let testo = bot.db.get(`${bot.config.prefix}`) || "w";
-
-  bot.channels.cache
-    .get("996342640901640233")
-    .send(
-      `New Guild Joined: (**${guild.name}**)\nID: (**${guild.id}**)\nThis Guild has **${guild.memberCount}** Members`
-    );
-  guild.systemChannel
-    .send(
-      `<:icon:976855886775586846> **thanks for adding Pleux**\nPrefix \`${testo}\` and command help \`${testo}help\`, bot prefix you can change by using command \`${testo}setprefix\`.\n***Hello***\nHello, I'm a bot (pleux), I'm a bot system, what I mean by my system is to make it easier for your server system to switch to bots, commands that are safe without any symptoms, if there are symptoms, please type prefix \`${testo}report\` to send bugs or something problematic on bots.\n***Support***\nSupport us by voting for our bot or joining our discord server, don't forget to share the pleux invite link (<https://bit.ly/pleux-invite>) with your friends. And visit our website <https://pleux.ga> and our blog to see the latest updates from pleux <https://pleuxbot.blogspot.com/>.`
-    )
-    .catch((x) => x.return);
-});
-bot.on("guildDelete", (guild) => {
-  bot.channels.cache
-    .get("996342640901640233")
-    .send(
-      `I have been removed from: (**${guild.name}**)\nID: (**${guild.id}**)\nThis Guild has **${guild.memberCount}** Members`
-    );
-});
 bot.login(process.env.TOKEN);
 
 const app = express();
