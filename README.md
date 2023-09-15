@@ -1,4 +1,4 @@
-# GrowLocke Bot (Original)
+# ModMail Bot (Original)
 
 ## Version 1.0.1
 
